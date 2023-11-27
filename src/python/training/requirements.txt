@@ -1,0 +1,17 @@
+black
+autopep8
+hurry.filesize==0.9
+ultralytics
+
+matplotlib
+numpy
+opencv-python
+Pillow
+tqdm
+ipython
+torch
+scikit-learn
+
+
+
+
