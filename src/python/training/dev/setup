@@ -1,0 +1,20 @@
+#! /bin/bash
+
+set -e
+
+echo "setup the curent environment"
+CURRENT_DIRECTORY="$( dirname "${BASH_SOURCE[0]}" )"
+cd "${CURRENT_DIRECTORY}"
+echo "current directory: $( pwd )"
+echo "setup development environment for training"
+YOLOv8_TRAINING="$( cd .. && pwd )"
+echo "dev directory set to: ${YOLOv8_TRAINING}"
+echo "remove old virtual environment"
+rm -rf "${YOLOv8_TRAINING}/.venv"
+echo "create new virtual environment"
+python3.10 -m venv "${YOLOv8_TRAINING}/.venv"
+echo "activate virtual environment"
+source "${YOLOv8_TRAINING}/.venv/bin/activate"
+echo "installing dependencies ..."
+
+(cd "${YOLOv8_TRAINING}" && pip install --upgrade pip && pip install -r requirements.txt)
