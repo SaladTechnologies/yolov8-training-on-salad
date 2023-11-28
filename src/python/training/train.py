@@ -3,6 +3,7 @@ import torch
 import os
 import logging.config
 import argparse
+import time
 
 
 def main():
@@ -16,6 +17,7 @@ def main():
         parser.add_argument(
             "--base_model",
             default=os.environ.get("BASE_MODEL", "yolov8n.pt"),
+            type=str,
         ),
         parser.add_argument(
             "--epochs",
@@ -32,10 +34,37 @@ def main():
             default=os.environ.get("IMAGE_SIZE", 640),
             type=int,
         ),
+        parser.add_argument(
+            "--workers",
+            default=os.environ.get("WORKERS", 4),
+            type=int,
+        ),
+        parser.add_argument(
+            "--save",
+            default=os.environ.get("SAVE", True),
+            type=bool,
+        ),
+        parser.add_argument(
+            "--save_period",
+            default=os.environ.get("SAVE_PERIOD", 1),
+            type=int,
+        ),
+        parser.add_argument(
+            "--cache",
+            default=os.environ.get("CACHE", False),
+            type=bool,
+        ),
+        parser.add_argument(
+            "--plots",
+            default=os.environ.get("PLOTS", False),
+            type=bool,
+        ),
         args = parser.parse_args()
 
         output_model_name = args.output_model_name
-        last_model_path = f"runs/detect/{output_model_name}/weights/last.pt"
+        last_model_path = (
+            f"/app/training/runs/detect/{output_model_name}/weights/last.pt"
+        )
         base_model = args.base_model
 
         # Check for CUDA device and set it
@@ -59,12 +88,18 @@ def main():
                 batch=args.batch,
                 imgsz=args.image_size,
                 name=output_model_name,
-                save=True,
-                save_period=1,
+                save=args.save,
+                save_period=args.save_period,
+                workers=args.workers,
+                cache=args.cache,
+                plots=args.plots,
             )
 
         # Evaluate the model's performance on the validation set
         model.val()
+
+        # sleep for 5 minites to allowweights to be uploaded
+        time.sleep(300)
 
         # Create a done.txt file to indicate that the training is done
         with open("done.txt", "w") as f:
